@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, BookOpen, Filter, GraduationCap, Layers, Search, Users, Wrench } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 import { FEATURES } from "@/lib/features";
-import { PRODUCT_NAME } from "@/lib/branding";
+import PageHero from "@/components/PageHero";
 import { searchCommunityContent, trackAnalyticsEvent, type CommunitySubmission } from "@/lib/platformApi";
 import { SEARCH_KINDS, SOURCE_COMMUNITIES, searchItems, type SearchKind, type SearchItem } from "@/lib/search";
 
@@ -133,21 +133,14 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="hero-af text-white px-5 pt-5 pb-5 overflow-hidden rounded-b-[24px]">
-        <div className="flex items-center gap-3 mb-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/af-symbol-white.svg" alt="U.S. Air Force" className="h-6 flex-shrink-0" draggable={false} />
-          <div className="w-px h-5 bg-silver/40 flex-shrink-0" aria-hidden="true" />
-          <span className="text-[10px] font-bold tracking-widest uppercase text-on-dark-dim">{PRODUCT_NAME}</span>
-        </div>
-        <h1 className="font-display text-2xl font-bold uppercase tracking-wider mb-1">Search</h1>
-        <p className="text-sm text-on-dark">
+    <div className="editorial-page bleed flex flex-col">
+      <PageHero eyebrow="The working reference" title="Search">
+        <p>
           Find plays, approved tools, official sources, and source communities from one box.
         </p>
-      </div>
+      </PageHero>
 
-      <div className="px-4 pt-5 flex flex-col gap-4 pb-6">
+      <div className="pt-5 flex flex-col gap-4 pb-6">
         <ScrollReveal>
           <div className="p-3 rounded-card bg-white border border-silver-mid/40 shadow-resting">
             <label className="flex items-center gap-2 rounded-inner bg-silver-tint px-3 py-2">

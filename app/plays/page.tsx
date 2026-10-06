@@ -9,7 +9,7 @@ import PlayCard2 from "@/components/PlayCard2";
 import PlatformFeedTabs from "@/components/PlatformFeedTabs";
 import CommunitySubmissionFeed from "@/components/CommunitySubmissionFeed";
 import { FEATURES } from "@/lib/features";
-import { PRODUCT_NAME } from "@/lib/branding";
+import PageHero from "@/components/PageHero";
 import type { PlatformFeedSort } from "@/lib/platformFeed";
 
 export default function PlaysPage() {
@@ -24,21 +24,13 @@ export default function PlaysPage() {
   );
 
   return (
-    <div className="flex flex-col">
-      {/* Header */}
-      <div className="hero-af text-white px-5 pt-5 pb-5 overflow-hidden rounded-b-[24px]">
-        <div className="flex items-center gap-3 mb-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/af-symbol-white.svg" alt="U.S. Air Force" className="h-6 flex-shrink-0" draggable={false} />
-          <div className="w-px h-5 bg-silver/40 flex-shrink-0" aria-hidden="true" />
-          <span className="text-[10px] font-bold tracking-widest uppercase text-on-dark-dim">{PRODUCT_NAME}</span>
-        </div>
-        <h1 className="font-display text-2xl font-bold uppercase tracking-wider mb-1">Plays</h1>
-        <p className="text-sm text-on-dark">
+    <div className="editorial-page bleed flex flex-col">
+      <PageHero eyebrow="Mission execution" title="Plays" photo="airman-laptop" position="60% 14%">
+        <p>
           Every play shows you its moving parts — who the AI is, the job, what you feed it, what comes back, and how
           you prove it. Fill it in, run it, and check it before your name goes on it.
         </p>
-      </div>
+      </PageHero>
 
       {FEATURES.platformDiscoveryFeeds && (
         <PlatformFeedTabs value={feedSort} onChange={setFeedSort} label="Sort plays" />
@@ -47,7 +39,7 @@ export default function PlaysPage() {
       {feedSort === "core" || !FEATURES.platformDiscoveryFeeds ? (
       <>
       {/* Scope note */}
-      <div className="px-4 pt-4">
+      <div className="pt-4">
         <p className="text-xs text-gray-500 font-medium leading-snug">
           v1 ships {PLAYS.length} deep, framework-grade plays that work for any Airman, E-1 through E-7. Tap a card to
           open its anatomy.
@@ -55,7 +47,7 @@ export default function PlaysPage() {
       </div>
 
       {/* Category sections */}
-      <div className="px-4 pt-4 flex flex-col gap-6 pb-4">
+      <div className="pt-4 flex flex-col gap-6 pb-4">
         {groups.map(({ category, plays }) => (
           <section key={category.id}>
             <div className="mb-2">

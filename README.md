@@ -86,6 +86,116 @@ npm install
 npm run dev
 ```
 
+## Interface and browser checks
+
+The site is art-directed as an editorial, institutional experience rather
+than an application. Each page is a sequence of full-bleed scenes that alternate
+architectural darkness and light stone: a cinematic hero, a typographic
+statement with a photographic plate, a dark feature, an interactive section,
+and a closing statement. The home page carries the sequence **leadership
+intent, institutional direction, Airman adoption, mission execution**. The
+primary navigation is unchanged.
+
+- **Typography** carries the monumental scale. Libre Caslon Display and Text
+  (display and quotations) and Public Sans (interface) are self-hosted under the
+  SIL Open Font License; see [app/fonts/](app/fonts). Nothing loads from a third
+  party.
+- **Geometry** replaces ornament: a twelve-column hairline "colonnade" over
+  dark scenes, double rules, and strictly symmetrical, axial compositions.
+  There are no literal columns, seals, or repeated insignia.
+- **Dark scenes** use a CSS grade (gradient and navy multiply) over the
+  photograph. Images are never edited; tone is adjusted only in CSS.
+- **Motion** is restrained and optional: the signature reveal and identity
+  resolve in the hero, a slow settle on the hero photograph, and scroll-linked
+  reveals and photographic drift (`.rise`, `.drift` in
+  [app/globals.css](app/globals.css)). Scroll-linked effects use CSS only and are
+  disabled by `prefers-reduced-motion` and unsupported browsers, where all content
+  is simply visible.
+- [PageHero](components/PageHero.tsx) gives Tools, Plays, Comms, Learn, and
+  Search the same cinematic header, each with its own photograph or none.
+
+Shared tokens live in [app/globals.css](app/globals.css); home scenes in
+[app/home.module.css](app/home.module.css); directory layout and interaction
+styles in [app/tools/tools.module.css](app/tools/tools.module.css).
+
+### Photography
+
+Only authentic, public-domain photographs are used. No imagery is generated,
+composited, or retouched. [content/photography.ts](content/photography.ts) is
+the registry: each entry records the photographer, date, location, release ID,
+rights statement, and a link to the original. The same data renders the public
+[Photography & sources](app/credits/page.tsx) page and the credit line beside
+every photograph.
+
+Files in [public/assets/photography/](public/assets/photography) are resized
+WebP renditions (1200 and 2400 pixels wide) of the originals, which remain at the
+linked sources. To add a photograph: choose an official U.S. Air Force or other
+public-domain image with a verifiable source; avoid ceremonial, memorial, or
+sensitive subjects; add a registry entry; export `-1200.webp` and `-2400.webp`;
+and use `<Photo id="…">`. Showing a photograph does not imply endorsement by the
+people or units pictured. If no suitable authentic photograph exists, use no
+image rather than a substitute.
+
+### Leadership source and signature
+
+The opening pairs a quotation and authentic signature from Gen. Kenneth S.
+Wilsbach's **3 November 2025 first letter to the force** with the Playbook's
+identity. It represents published leadership intent, **not an endorsement of
+this product**. The AI strategy is separately attributed to its foreword's
+signatory, Secretary of the Air Force Troy E. Meink. Do not combine the CSAF
+signature with new language in a way that implies he signed or approved it.
+
+- [Official letter](https://www.af.mil/Portals/1/documents/2025SAF/24th_CSAF_First_Letter_to_the_Force.pdf)
+- [Archived copy of the official URL](https://web.archive.org/web/20260123235149/https://www.af.mil/Portals/1/documents/2025SAF/24th_CSAF_First_Letter_to_the_Force.pdf), retrieved because the live endpoint returned HTTP 403 during implementation.
+- [Complete local source PDF](public/docs/csaf-first-letter-2025-11-03.pdf), a public U.S. government communication; SHA-256: `d00219b5541287ba40505f4adfb9c20c0c0785c5cf69de3cf1c2722bfecb004c`.
+- [Signature asset](public/assets/csaf-wilsbach-signature.png): page 1 cropped at PDF coordinates `(319, 660, 468, 694.5)` and rendered at 4x with PyMuPDF. The ink is not traced, synthesized, or retouched.
+- [Source metadata](content/leadership.ts) and [hero component](components/LeadershipHero.tsx) keep the date, author, quotation, document links, and non-endorsement disclosure together.
+
+The signature is shown as white ink on night (inverted and screened from the
+original scan) and receives a single 1.6-second reveal; the identity resolves
+after 1.5 seconds. This reveals the scan, not a reconstruction of the signing
+gesture. Navigation and actions are never blocked by the animation.
+`prefers-reduced-motion` shows the complete composition immediately, as does
+the static fallback without animation support. Provenance links remain
+available under **About the signature & its source**.
+
+First-visit setup is intentionally **optional**, so it no longer covers the
+opening. **Set up Home** and **Change setup** retain the existing device-local
+preferences workflow. Saved work, strategy disclosures, and the source library
+remain available in **Your working reference**, with keyboard-operable tabs.
+
+### Directory behavior and validation
+
+Tools search covers names, descriptions, categories, badges, and mapped tasks.
+Search and task selection combine to narrow results; selecting the active task
+again clears it. **All tools** clears the task selection; **Reset filters**
+clears both search and task selection. Tool details retain launch links,
+device-local saved items and access progress, dated verification, reporting,
+and safety guidance. Missing launch links and Coming Soon entries remain
+explicitly unavailable. Desktop details use a keyboard-contained dialog;
+smaller screens expand details inline.
+
+To run the browser regression and accessibility checks:
+
+```bash
+npm ci
+npx playwright install --with-deps chromium
+npm run test:ui
+```
+
+The test runner starts a static-mode preview on `127.0.0.1:3100`, or reuses an
+existing preview there outside CI. Keep that port in **static mode** when
+reusing it. Tests cover search/filter combinations, all roster entries, saved
+state, access paths, clipboard feedback, optional setup, reference tabs and
+source filters. Leadership tests also verify the source PDF hash, quote
+attribution, signature asset, animation sequence, and reduced-motion behavior.
+Axe checks cover the directory and all three home reference views at 1440,
+1024, 768, and 390 pixels. Screenshots and failure traces are written
+to the ignored `test-results/` directory. These checks complement, rather than
+replace, a rendered visual review and `npm run build:static` /
+`npm run build:platform`. Backend-dependent platform actions still require the
+container stack.
+
 ## Handling
 
 **Non-sensitive content only.** Nothing controlled or sensitive belongs in this repository.

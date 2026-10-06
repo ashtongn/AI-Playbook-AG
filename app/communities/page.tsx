@@ -7,7 +7,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { SOURCE_COMMUNITIES } from "@/content/communities";
 import { PLAYS } from "@/content/plays";
 import { FEATURES } from "@/lib/features";
-import { PRODUCT_NAME } from "@/lib/branding";
+import PageHero from "@/components/PageHero";
 import { TOOLS } from "@/lib/mock/tools";
 import PlatformFeedTabs from "@/components/PlatformFeedTabs";
 import CommunitySubmissionFeed from "@/components/CommunitySubmissionFeed";
@@ -30,26 +30,19 @@ export default function CommunitiesPage() {
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="hero-af text-white px-5 pt-5 pb-5 overflow-hidden rounded-b-[24px]">
-        <div className="flex items-center gap-3 mb-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/af-symbol-white.svg" alt="U.S. Air Force" className="h-6 flex-shrink-0" draggable={false} />
-          <div className="w-px h-5 bg-silver/40 flex-shrink-0" aria-hidden="true" />
-          <span className="text-[10px] font-bold tracking-widest uppercase text-on-dark-dim">{PRODUCT_NAME}</span>
-        </div>
-        <h1 className="font-display text-2xl font-bold uppercase tracking-wider mb-1">Communities</h1>
-        <p className="text-sm text-on-dark">
+    <div className="editorial-page bleed flex flex-col">
+      <PageHero eyebrow="Airman adoption" title="Communities" photo="hangar-t6" position="50% 70%">
+        <p>
           Source communities for feedback, AFSC language, and practical use cases. These are starting points pending SME validation.
         </p>
-      </div>
+      </PageHero>
 
       {FEATURES.platformDiscoveryFeeds && (
         <PlatformFeedTabs value={feedSort} onChange={setFeedSort} label="Browse communities" />
       )}
 
       {feedSort === "core" || !FEATURES.platformDiscoveryFeeds ? (
-      <div className="px-4 pt-5 flex flex-col gap-4 pb-6">
+      <div className="pt-5 flex flex-col gap-4 pb-6">
         <ScrollReveal>
           <form action="/search" className="p-3 rounded-card bg-white border border-silver-mid/40 shadow-resting">
             <input type="hidden" name="kind" value="community" />
