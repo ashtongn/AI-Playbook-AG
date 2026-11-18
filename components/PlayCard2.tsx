@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   ChevronDown, ChevronUp, Copy, Check, Zap, Clock, ShieldAlert,
-  ArrowUpRight, Info, PanelRightOpen, Plug, TrendingUp,
+  ArrowUpRight, Info, PanelRightOpen, Plug, TrendingUp, Award, Lock,
 } from "lucide-react";
 import { assemblePrompt, type ContentItem } from "@/content/schema";
 import { categoryLabel } from "@/content/categories";
@@ -14,14 +14,14 @@ import ResponsiveDetailPanel from "@/components/ResponsiveDetailPanel";
 import ReportAccessButton from "@/components/ReportAccessButton";
 import { communitiesForPlay, playHref } from "@/lib/communityGraph";
 
-// ─── The five anatomy segments, color-coded from the app's own tokens ─────────
-// (Not the mockup's raw hexes — these are the existing #003087 / tech / caution /
-// success / af-red semantic tokens, so the card stays on-palette.)
+// ─── The five anatomy segments ────────────────────────────────────────────────
+// A single tonal navy/slate scale (plus brand red for the final check) so the
+// anatomy reads as one editorial system rather than a rainbow of status colors.
 const SEGMENTS = [
-  { key: "persona", label: "WHO THE AI IS", color: "var(--color-primary)" },
-  { key: "task", label: "THE JOB", color: "var(--color-tech-dim)" },
-  { key: "feed", label: "WHAT YOU FEED IT", color: "var(--color-caution)" },
-  { key: "format", label: "WHAT COMES BACK", color: "var(--color-success-mid)" },
+  { key: "persona", label: "WHO THE AI IS", color: "var(--color-primary-dark)" },
+  { key: "task", label: "THE JOB", color: "var(--color-primary)" },
+  { key: "feed", label: "WHAT YOU FEED IT", color: "var(--color-primary-muted)" },
+  { key: "format", label: "WHAT COMES BACK", color: "var(--color-tech-dim)" },
   { key: "verify", label: "PROVE IT", color: "var(--color-af-red)" },
 ] as const;
 
@@ -32,7 +32,7 @@ function ConnectorChips({ connectors }: { connectors: string[] }) {
       {connectors.map((c) => (
         <span
           key={c}
-          className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-badge bg-success-tint text-success-mid border border-success/30"
+          className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-badge bg-tech-tint text-tech-dim border border-tech/30"
         >
           <Plug size={9} /> {c}
         </span>
@@ -56,24 +56,26 @@ function Segment({
 }) {
   const [showWhy, setShowWhy] = useState(false);
   return (
-    <div className="rounded-inner overflow-hidden border border-silver-mid/40 mb-2">
+    <div
+      className="rounded-inner overflow-hidden border border-silver-mid/60 border-l-[3px] mb-2 bg-white"
+      style={{ borderLeftColor: color }}
+    >
       <button
         type="button"
         onClick={() => why && setShowWhy((v) => !v)}
-        className="w-full flex items-center justify-between px-2.5 py-1 text-left"
-        style={{ background: color }}
+        className="w-full flex items-center justify-between px-3 py-1.5 text-left bg-primary-ghost border-b border-silver-mid/60"
         aria-expanded={why ? showWhy : undefined}
       >
-        <span className="text-[9px] font-extrabold uppercase tracking-[0.12em] text-white">{label}</span>
+        <span className="text-[9px] font-bold uppercase tracking-[0.16em]" style={{ color }}>{label}</span>
         {why && (
-          <span className="text-[9px] font-bold uppercase tracking-wide text-white/80 flex items-center gap-0.5">
+          <span className="text-[9px] font-bold uppercase tracking-wide text-silver flex items-center gap-0.5">
             <Info size={10} /> why
           </span>
         )}
       </button>
       {why && showWhy && (
-        <p className="text-[11px] leading-snug text-white px-2.5 py-2" style={{ background: color }}>
-          <span className="font-bold">WHY: </span>
+        <p className="text-[11px] leading-snug text-primary-dark px-3 py-2 bg-warm-tint/60 border-b border-warm/40">
+          <span className="font-bold text-warm-dark">WHY: </span>
           {why}
         </p>
       )}
@@ -114,7 +116,7 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
 
   return (
     // id anchor: search results and tool cards deep-link here as /communities/<id>#<playId>
-    <div id={play.id} className="scroll-mt-4 rounded-card shadow-resting overflow-hidden bg-white border border-silver-mid/50 transition-all duration-base ease-smooth hover:shadow-hover hover:border-primary/25">
+    <div id={play.id} className="scroll-mt-4 rounded-card shadow-resting overflow-hidden bg-surface border border-silver-mid border-t-2 border-t-primary-dark transition-all duration-base ease-smooth hover:shadow-hover hover:border-primary/40 hover:border-t-primary-dark">
       {/* ── Collapsed header ── */}
       <div className="flex items-start gap-2 p-4">
         <button
@@ -122,23 +124,23 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
           className="flex-1 min-w-0 text-left"
           aria-expanded={expanded}
         >
-          <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-silver">{categoryLabel(play.category)}</p>
-          <h3 className="text-sm font-bold text-primary-dark leading-tight mt-0.5">{play.title}</h3>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-warm-dark">{categoryLabel(play.category)}</p>
+          <h3 className="font-editorial text-lg font-semibold text-primary-dark leading-snug mt-1">{play.title}</h3>
           {play.situation && (
-            <p className="text-[11px] text-gray-500 italic leading-snug mt-1">{play.situation}</p>
+            <p className="text-xs text-gray-500 leading-snug mt-1">{play.situation}</p>
           )}
-          <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-badge bg-primary-tint text-primary">
+          <div className="flex items-center gap-1.5 mt-3 flex-wrap">
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-badge bg-primary-ghost text-primary border border-primary/25">
               {play.level === 3 ? <><TrendingUp size={9} /> Level 3</> : `Level ${play.level ?? 1}`}
             </span>
             {play.time_back && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-badge bg-gray-100 text-gray-500">
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-badge bg-silver-tint text-silver border border-silver-mid">
                 <Clock size={9} /> {play.time_back}
               </span>
             )}
             <ConnectorChips connectors={play.connectors} />
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-badge bg-warm-tint text-warm-dark border border-warm/40">
-              ⭐ battle-tested
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-badge bg-warm-tint text-warm-dark border border-warm/60">
+              <Award size={9} aria-hidden="true" className="text-primary-dark" /> Battle-tested
             </span>
           </div>
         </button>
@@ -149,7 +151,7 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
             onClick={() => setExpanded((e) => !e)}
             aria-label={expanded ? "Collapse play" : "Expand play"}
             aria-expanded={expanded}
-            className="p-1.5 text-gray-400 hover:text-primary transition-colors"
+            className="p-1.5 text-silver hover:text-primary transition-colors"
           >
             <span className="lg:hidden">
               {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -160,7 +162,7 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
       </div>
 
       {otherCommunities.length > 0 && (
-        <p className="flex flex-wrap items-center gap-1.5 px-4 pb-3 text-[10px] font-bold uppercase tracking-wider text-silver">
+        <p className="flex flex-wrap items-center gap-1.5 mx-4 py-3 border-t border-silver-mid/60 text-[10px] font-bold uppercase tracking-[0.16em] text-silver">
           <span>{communityId ? "Also in" : "In"}</span>
           {otherCommunities.map((community) => (
             <Link
@@ -185,9 +187,9 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
         <div className="px-4 pb-4 border-t border-silver-mid/40 lg:px-6">
           {/* Sensitive plays: CUI caution + disclaimer up top */}
           {play.sensitive && (
-            <div className="mt-3 flex items-start gap-2 rounded-inner bg-caution-tint border border-caution/40 px-3 py-2.5">
-              <ShieldAlert size={15} className="flex-shrink-0 mt-0.5 text-caution-mid" />
-              <p className="text-[11px] font-semibold text-caution-mid leading-snug">
+            <div className="mt-3 flex items-start gap-2 rounded-r-inner border-l-[3px] border-warm-dark bg-warm-tint px-3 py-2.5">
+              <ShieldAlert size={15} className="flex-shrink-0 mt-0.5 text-warm-dark" />
+              <p className="text-[11px] font-semibold text-primary-dark leading-snug">
                 Higher-sensitivity play. This structures your writing — it is not legal advice. The Area Defense
                 Counsel is free, confidential, and outside your chain; seeing them first is always fair.
               </p>
@@ -218,27 +220,27 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
               <div className="flex flex-col gap-2">
                 {seg.feed_slots.map((slot) => (
                   <label key={slot.key} className="block">
-                    <span className="text-[10px] font-semibold text-caution-mid">{slot.label}</span>
+                    <span className="text-[10px] font-semibold text-primary-muted">{slot.label}</span>
                     {slot.multiline ? (
                       <textarea
                         value={values[slot.key] ?? ""}
                         onChange={(e) => setValues((v) => ({ ...v, [slot.key]: e.target.value }))}
                         placeholder={slot.placeholder}
                         rows={2}
-                        className="mt-1 w-full rounded-input border border-dashed border-caution/60 bg-caution-tint/40 px-2.5 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-caution focus:bg-white resize-y"
+                        className="mt-1 w-full rounded-input border border-dashed border-primary-muted/50 bg-primary-ghost px-2.5 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-solid focus:border-primary focus:bg-white resize-y"
                       />
                     ) : (
                       <input
                         value={values[slot.key] ?? ""}
                         onChange={(e) => setValues((v) => ({ ...v, [slot.key]: e.target.value }))}
                         placeholder={slot.placeholder}
-                        className="mt-1 w-full rounded-input border border-dashed border-caution/60 bg-caution-tint/40 px-2.5 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-caution focus:bg-white"
+                        className="mt-1 w-full rounded-input border border-dashed border-primary-muted/50 bg-primary-ghost px-2.5 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-solid focus:border-primary focus:bg-white"
                       />
                     )}
                   </label>
                 ))}
-                <p className="text-[10px] font-semibold text-caution-mid flex items-center gap-1">
-                  🔒 Nothing you type leaves this phone.
+                <p className="text-[10px] font-semibold text-silver flex items-center gap-1">
+                  <Lock size={10} aria-hidden="true" className="text-primary-dark" /> Nothing you type leaves this phone.
                 </p>
               </div>
             </Segment>
@@ -267,7 +269,7 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
           {/* 4 · See the whole play → assemble verbatim + copy */}
           <button
             onClick={handleAssemble}
-            className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-inner text-sm font-bold bg-primary text-white active:bg-primary-dark transition-colors"
+            className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-inner text-sm font-bold bg-primary-dark text-white hover:bg-primary active:bg-primary-deeper transition-colors"
           >
             <Zap size={15} /> See the whole play
           </button>
@@ -279,7 +281,7 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
               <button
                 onClick={handleCopy}
                 className={`mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-inner text-sm font-bold transition-colors ${
-                  copied ? "bg-success text-white" : "bg-success-mid text-white active:opacity-90"
+                  copied ? "bg-tech-dim text-white" : "bg-white text-primary-dark border border-primary-dark hover:bg-primary-ghost active:bg-primary-tint"
                 }`}
               >
                 {copied ? <><Check size={15} /> Copied — go run it</> : <><Copy size={15} /> Copy the play</>}
@@ -289,9 +291,9 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
 
           {/* 5 · Where to run it + connector setup */}
           {runOn && (
-            <div className="mt-3 rounded-inner bg-success-tint border border-success/30 px-3 py-2.5">
-              <p className="text-[11px] text-success-mid leading-snug">
-                <span className="font-bold">Run it: </span>
+            <div className="mt-3 rounded-r-inner border-l-[3px] border-tech-dim bg-tech-tint px-3 py-2.5">
+              <p className="text-[11px] text-primary-dark leading-snug">
+                <span className="font-bold text-tech-dim">Run it: </span>
                 {runOn.surfaces.join(" · ")}
                 {runOn.connector_note ? ` — ${runOn.connector_note}` : ""}
               </p>
@@ -300,15 +302,15 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
 
           {/* 6 · Never-paste bar */}
           {play.never_paste && (
-            <div className="mt-3 flex items-start gap-2 rounded-inner bg-danger-tint border border-danger/30 px-3 py-2.5">
-              <ShieldAlert size={15} className="flex-shrink-0 mt-0.5 text-danger-mid" />
-              <p className="text-[11px] font-semibold text-danger-mid leading-snug">{play.never_paste}</p>
+            <div className="mt-3 flex items-start gap-2 rounded-r-inner border-l-[3px] border-af-red bg-white border-y border-r border-y-silver-mid/60 border-r-silver-mid/60 px-3 py-2.5">
+              <ShieldAlert size={15} className="flex-shrink-0 mt-0.5 text-af-red" />
+              <p className="text-[11px] font-semibold text-af-red leading-snug">{play.never_paste}</p>
             </div>
           )}
 
           {/* 8 · Deeper bridge link(s) */}
           {play.deeper_links?.map((d) => (
-            <div key={d.label} className="mt-3 rounded-inner bg-primary-ghost border border-primary/20 px-3 py-2.5">
+            <div key={d.label} className="mt-3 rounded-inner bg-primary-ghost border border-silver-mid px-3 py-2.5">
               <p className="text-[11px] font-bold text-primary flex items-center gap-1">
                 <ArrowUpRight size={13} /> {d.label}
               </p>
@@ -319,7 +321,7 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
           {/* 9 · Provenance drawer */}
           <button
             onClick={() => setShowProv((v) => !v)}
-            className="mt-3 text-[10px] font-bold uppercase tracking-wide text-silver flex items-center gap-1"
+            className="mt-3 text-[10px] font-bold uppercase tracking-[0.16em] text-silver hover:text-primary flex items-center gap-1"
             aria-expanded={showProv}
           >
             <Info size={11} /> Where this play comes from
