@@ -12,8 +12,10 @@
 - Search matches community aliases and task language, and every play result shows its communities.
 - [docs/RESTRICTED_CONTENT_REQUIREMENTS.md](docs/RESTRICTED_CONTENT_REQUIREMENTS.md).
 - Navigation, community, home, and unit tests.
+- Self-authored explainers on the Learn page (`/ai-automation`) for AI vs. machine learning vs. deep learning vs. generative AI, tokens, context windows, RAG, prompt structure, and agent loops. Each has short text, a simple diagram, and a light keyboard-operable interactive using mock data only ([components/LearnExplainers.tsx](components/LearnExplainers.tsx)).
 
 ### Removed
+- The six third-party YouTube embeds on the Learn page, replaced by the explainers above (compliance: endorsement, attribution, tracking, and Section 508 captions).
 - The unused structured memorandum code: separate-page MFR component, signature draw-on, memo data contract, and intake guide. The leadership letter is linked as a PDF instead.
 - The standalone Plays page and navigation item (`/plays` redirects to `/communities`).
 - The "Concept demonstration" and "Plays are examples — check every draft before you sign it" header lines, and the "not an endorsement" wording in the hero, footer, and strategy section.

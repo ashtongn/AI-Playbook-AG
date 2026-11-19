@@ -9,6 +9,9 @@ import {
 } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 import PageHero from "@/components/PageHero";
+import {
+  AiLayersExplainer, TokensExplainer, ContextWindowExplainer, RagExplainer, PromptExplainer, AgentLoopExplainer,
+} from "@/components/LearnExplainers";
 import { playHref } from "@/lib/communityGraph";
 
 // ─── Progressive-disclosure accordion — depth never reads heavy ─────────────────
@@ -44,21 +47,6 @@ function Accordion({
         <ChevronDown size={18} className={`flex-shrink-0 text-gray-400 transition-transform duration-base ${open ? "rotate-180" : ""}`} />
       </button>
       {open && <div className="px-4 pb-4 -mt-1">{children}</div>}
-    </div>
-  );
-}
-
-function Video({ src, title }: { src: string; title: string }) {
-  return (
-    <div className="aspect-video w-full rounded-inner overflow-hidden border border-silver-mid/40 mt-3">
-      <iframe
-        className="w-full h-full"
-        src={src}
-        title={title}
-        loading="lazy"
-        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
     </div>
   );
 }
@@ -263,7 +251,7 @@ export default function AIAutomationPage() {
                   It predicts text from patterns it learned. It is not a search engine, it is not always right, and it is not
                   sentient. Treat it like a fast, confident drafting partner that still needs a check.
                 </Body>
-                <Video src="https://www.youtube-nocookie.com/embed/qYNweeDHiyU" title="AI, Machine Learning, Deep Learning and Generative AI Explained (IBM Technology)" />
+                <AiLayersExplainer />
               </Accordion>
             </ScrollReveal>
 
@@ -284,7 +272,7 @@ export default function AIAutomationPage() {
                   Models read and write in tokens — chunks of words, not whole sentences. Tokens take up the model&apos;s
                   limited working memory, so tighter prompts and trimmed context go further.
                 </Body>
-                <Video src="https://www.youtube-nocookie.com/embed/49V-5Ock8LU" title="Tokens and token management explained" />
+                <TokensExplainer />
               </Accordion>
             </ScrollReveal>
 
@@ -295,7 +283,7 @@ export default function AIAutomationPage() {
                   The context window is everything the model can see at once — your prompt plus the conversation so far. Once
                   it fills up, the oldest content drops off, so keep what matters in view.
                 </Body>
-                <Video src="https://www.youtube-nocookie.com/embed/-QVoIxEpFkM" title="Context windows in LLMs explained" />
+                <ContextWindowExplainer />
               </Accordion>
             </ScrollReveal>
 
@@ -306,7 +294,7 @@ export default function AIAutomationPage() {
                   Retrieval-augmented generation lets a model pull in trusted documents at answer time instead of relying only
                   on what it memorized. It&apos;s how you ground answers in your own sources and reduce hallucination.
                 </Body>
-                <Video src="https://www.youtube-nocookie.com/embed/UabBYexBD4k" title="Retrieval-Augmented Generation (RAG) explained" />
+                <RagExplainer />
               </Accordion>
             </ScrollReveal>
           </div>
@@ -324,7 +312,7 @@ export default function AIAutomationPage() {
                   an Air Force writing coach&rdquo;), the <strong>context</strong> it needs, the <strong>task</strong> in plain
                   terms, and the <strong>format</strong> you want back — then iterate. The clearer your ask, the better the draft.
                 </Body>
-                <Video src="https://www.youtube-nocookie.com/embed/jC4v5AS4RIM" title="Prompt Engineering explained" />
+                <PromptExplainer />
               </Accordion>
             </ScrollReveal>
 
@@ -348,7 +336,7 @@ export default function AIAutomationPage() {
                   replying. Powerful — but you still own and verify everything they produce. Building one with saved context and
                   templates is <strong>Level 2</strong> below.
                 </Body>
-                <Video src="https://www.youtube-nocookie.com/embed/FwOTs4UxQS4" title="AI agents explained" />
+                <AgentLoopExplainer />
               </Accordion>
             </ScrollReveal>
 
