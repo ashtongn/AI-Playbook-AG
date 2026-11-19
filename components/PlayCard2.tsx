@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   ChevronDown, ChevronUp, Copy, Check, Zap, Clock, ShieldAlert,
-  ArrowUpRight, Info, PanelRightOpen, Plug, TrendingUp, Award, Lock,
+  ArrowUpRight, Info, PanelRightOpen, Plug, TrendingUp, Award, Lock, Pencil, Trash2,
 } from "lucide-react";
 import { assemblePrompt, type ContentItem } from "@/content/schema";
 import { categoryLabel } from "@/content/categories";
@@ -12,7 +12,25 @@ import { markPlayRun } from "@/lib/favorites";
 import StarToggle from "@/components/StarToggle";
 import ResponsiveDetailPanel from "@/components/ResponsiveDetailPanel";
 import ReportAccessButton from "@/components/ReportAccessButton";
+import PlayStatusBadge from "@/components/PlayStatusBadge";
 import { communitiesForPlay, playHref } from "@/lib/communityGraph";
+import type { PlayPublicationStatus } from "@/lib/customPlays/types";
+
+// Extra presentation for a play an Airman wrote themselves (see lib/customPlays).
+export interface CustomPlayCardMeta {
+  status: PlayPublicationStatus;
+  authorName: string;
+  updatedAt: string;
+  editHref: string;
+  onDelete: () => void;
+}
+
+function formatDate(iso: string): string {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
 
 // ─── The five anatomy segments ────────────────────────────────────────────────
 // A single tonal navy/slate scale (plus brand red for the final check) so the
@@ -86,8 +104,17 @@ function Segment({
 
 // `communityId` is the community the card is shown in. Plays open inside a community, so saved
 // items and report links point back to it, and the card lists every other community it is in.
-export default function PlayCard2({ play, communityId }: { play: ContentItem; communityId?: string }) {
+export default function PlayCard2({
+  play,
+  communityId,
+  custom,
+}: {
+  play: ContentItem;
+  communityId?: string;
+  custom?: CustomPlayCardMeta;
+}) {
   const [expanded, setExpanded] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
   const [assembled, setAssembled] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -112,7 +139,7 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
 
   const runOn = play.run_on;
   const playUrl = playHref(play.id, communityId);
-  const otherCommunities = communitiesForPlay(play.id).filter((community) => community.id !== communityId);
+  const otherCommunities = custom ? [] : communitiesForPlay(play.id).filter((community) => community.id !== communityId);
 
   return (
     // id anchor: search results and tool cards deep-link here as /communities/<id>#<playId>
@@ -139,13 +166,32 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
               </span>
             )}
             <ConnectorChips connectors={play.connectors} />
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-badge bg-warm-tint text-warm-dark border border-warm/60">
-              <Award size={9} aria-hidden="true" className="text-primary-dark" /> Battle-tested
-            </span>
+            {custom ? (
+              <PlayStatusBadge status={custom.status} />
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-badge bg-warm-tint text-warm-dark border border-warm/60">
+                <Award size={9} aria-hidden="true" className="text-primary-dark" /> Battle-tested
+              </span>
+            )}
           </div>
+          {custom && (
+            <p className="mt-2 text-[10px] text-silver">
+              By {custom.authorName}
+              {formatDate(custom.updatedAt) && <> · Updated {formatDate(custom.updatedAt)}</>}
+            </p>
+          )}
         </button>
 
         <div className="flex items-center gap-0.5 flex-shrink-0 -mr-1.5">
+          {custom && (
+            <Link
+              href={custom.editHref}
+              aria-label={`Edit play: ${play.title}`}
+              className="p-1.5 text-silver hover:text-primary transition-colors"
+            >
+              <Pencil size={16} aria-hidden="true" />
+            </Link>
+          )}
           <StarToggle item={{ type: "play", id: play.id, title: play.title, url: playUrl }} />
           <button
             onClick={() => setExpanded((e) => !e)}
@@ -239,6 +285,9 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
                     )}
                   </label>
                 ))}
+                {seg.feed_slots.length === 0 && (
+                  <p className="text-[11px] text-gray-600">No fill-in boxes. This play runs exactly as written.</p>
+                )}
                 <p className="text-[10px] font-semibold text-silver flex items-center gap-1">
                   <Lock size={10} aria-hidden="true" className="text-primary-dark" /> Nothing you type leaves this phone.
                 </p>
@@ -250,6 +299,7 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
             </Segment>
 
             {/* PROVE IT — the Airman's own checklist (local, not part of the prompt) */}
+            {seg.verify.length > 0 && (
             <Segment color={SEGMENTS[4].color} label={SEGMENTS[4].label}>
               <div className="flex flex-col gap-1.5">
                 {seg.verify.map((item, idx) => (
@@ -260,11 +310,50 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
                 ))}
               </div>
             </Segment>
+            )}
           </div>
 
-          <div className="mt-4 flex justify-end border-t border-silver-mid/50 pt-2">
-            <ReportAccessButton targetType="play" targetId={play.id} targetTitle={play.title} targetUrl={playUrl} />
-          </div>
+          {custom ? (
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-silver-mid/50 pt-2">
+              {confirmDelete ? (
+                <div role="group" aria-label="Confirm delete" className="flex flex-wrap items-center gap-2">
+                  <p className="text-[11px] font-semibold text-primary-dark">Delete this play from this device? This can&apos;t be undone.</p>
+                  <button
+                    type="button"
+                    onClick={custom.onDelete}
+                    className="min-h-9 rounded-inner bg-af-red px-3 text-xs font-bold text-white"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    type="button"
+                    autoFocus
+                    onClick={() => setConfirmDelete(false)}
+                    className="min-h-9 rounded-inner border border-primary-dark px-3 text-xs font-bold text-primary-dark"
+                  >
+                    Keep
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link href={custom.editHref} className="inline-flex min-h-9 items-center gap-1 text-xs font-bold text-primary">
+                    <Pencil size={13} aria-hidden="true" /> Edit
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDelete(true)}
+                    className="inline-flex min-h-9 items-center gap-1 text-xs font-bold text-af-red"
+                  >
+                    <Trash2 size={13} aria-hidden="true" /> Delete
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="mt-4 flex justify-end border-t border-silver-mid/50 pt-2">
+              <ReportAccessButton targetType="play" targetId={play.id} targetTitle={play.title} targetUrl={playUrl} />
+            </div>
+          )}
 
           {/* 4 · See the whole play → assemble verbatim + copy */}
           <button
@@ -326,7 +415,13 @@ export default function PlayCard2({ play, communityId }: { play: ContentItem; co
           >
             <Info size={11} /> Where this play comes from
           </button>
-          {showProv && (
+          {showProv && custom && (
+            <p className="mt-1.5 rounded-inner bg-warm-tint/50 border border-warm/40 px-3 py-2.5 text-[11px] text-gray-600 leading-snug">
+              {custom.authorName === "You" ? "You wrote this play" : `${custom.authorName} wrote this play`}. It is saved on this
+              device only and has not been reviewed. Check every draft before your name goes on it.
+            </p>
+          )}
+          {showProv && !custom && (
             <p className="mt-1.5 rounded-inner bg-warm-tint/50 border border-warm/40 px-3 py-2.5 text-[11px] text-gray-600 leading-snug">
               Adapted from open prompt frameworks proven by tens of thousands of practitioners, plus the community
               workflows Airmen already trust — rebuilt to current guidance and verified 14 Jul 2026. The app shows
