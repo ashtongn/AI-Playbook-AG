@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, ChevronRight, Layers, Wrench } from "lucide-react";
 import PageHero from "@/components/PageHero";
-import PlayCard2 from "@/components/PlayCard2";
+import CommunityPlays from "@/components/CommunityPlays";
 import { COMMUNITY_LEVEL_LABEL } from "@/content/communities";
 import { PLAYS } from "@/content/plays";
 import {
@@ -99,22 +99,7 @@ export default function CommunityDetail({ id }: { id: string }) {
           </section>
         )}
 
-        <section aria-labelledby="plays-title">
-          <h2 id="plays-title" className="text-xs font-bold uppercase tracking-wider text-primary-dark">Plays in this community</h2>
-          {plays.length > 0 ? (
-            <div className="mt-2 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {plays.map((play) => <PlayCard2 key={play.id} play={play} communityId={id} />)}
-            </div>
-          ) : (
-            <p className="mt-2 rounded-card border border-dashed border-silver-mid/70 bg-white p-4 text-xs text-gray-600">
-              No plays have been added to {community.name} yet.
-              {inherited.length > 0 ? " Plays from broader communities are listed below." : ""}
-            </p>
-          )}
-          <p className="mt-3 text-[11px] text-gray-500">
-            Time figures are self-reported estimates. Check every draft before your name goes on it.
-          </p>
-        </section>
+        <CommunityPlays communityId={id} communityName={community.name} plays={plays} hasInherited={inherited.length > 0} />
 
         {adaptations.length > 0 && (
           <section aria-labelledby="adaptations-title">

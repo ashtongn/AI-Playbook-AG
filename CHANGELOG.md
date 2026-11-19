@@ -3,6 +3,8 @@
 ## [Unreleased] — Navigation, communities, and memorandum rework
 
 ### Added
+- Create your own play at `/plays/new` ([components/PlayForm.tsx](components/PlayForm.tsx)). Write the prompt with `[BRACKETS]` and each one becomes a fill-in box. Plays are saved on this device only, behind a storage interface a backend can replace later ([lib/customPlays](lib/customPlays)). The record already has author, community, status (draft / pending review / approved / rejected), and review fields for a future publish-and-approve flow.
+- Community pages split plays into "Playbook" and "Created by Airmen" tabs. The second tab shows your own plays with edit and delete, and holds a place for approved plays from other Airmen ([components/CommunityPlays.tsx](components/CommunityPlays.tsx)).
 - A quiet link beneath the hero title to the Chief of Staff's first letter to the force (3 Nov 2025), with the signature and a signed PDF that opens in the same tab ([components/LeadershipLetter.tsx](components/LeadershipLetter.tsx), [content/leadershipLetter.ts](content/leadershipLetter.ts)). Signature use approved by the product owner.
 - Header with the Air Force symbol (`public/assets/af-symbol-white.svg`), direct Search and Sign in, and a hamburger side menu that works by keyboard and pointer ([components/SiteHeader.tsx](components/SiteHeader.tsx)).
 - Full-screen home hero with four working routes ([components/HomeHero.tsx](components/HomeHero.tsx)) and a `/sign-in` route that reuses the existing account dialog.
